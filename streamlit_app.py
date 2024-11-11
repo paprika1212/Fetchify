@@ -17,27 +17,33 @@ if not openai_api_key:
 uploaded_file = st.file_uploader("Upload a CSV file", accept_multiple_files=False)
 if uploaded_file is not None:
     try:
+        # Attempt to load and display the CSV file
         df = pd.read_csv(uploaded_file)
         st.write("### Full Dataset")
         
-        selection = st.dataframe(
-                df,
-                key="interactive_df",
-                on_select="rerun",
-                use_container_width=True,
-                height=400,
-                selection_mode="single-column"
-            )
+        # Display the dataframe
+        st.dataframe(df, use_container_width=True, height=400)
         
-
-
+        # Selecting column for filtering
         columns = df.columns.tolist()
         selected_column = st.selectbox("Select column to filter by", columns)
-
+        
+        # Displaying unique entries from the selected column
         filtered_df = df[selected_column]
         unique_values = df[selected_column].unique()
-        entries = df.iloc[:, [selected_column]]
-        st.write(filtered_df)
+        st.write("Filtered Column:", filtered_df)
+        
+        st.text_input(
+            "Input your search query for each entry in the column, using placeholders :  ",
+            "Eg : ",
+            key="query"
+        )
 
-    except:
-        st.write("error")
+    except pd.errors.EmptyDataError:
+        st.error("The uploaded file is empty. Please upload a valid CSV file.")
+    except pd.errors.ParserError:
+        st.error("Error parsing CSV file. Ensure the file is formatted correctly.")
+    except KeyError as e:
+        st.error(f"Column selection error: {e}")
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
