@@ -37,7 +37,6 @@ def scrapetheweb(
     # Validate inputs
     if column_name not in filtered_df.columns:
         raise ValueError(f"Column '{column_name}' not found in DataFrame")
-    
     if '{value}' not in query_template:
         raise ValueError("Query template must contain {value} placeholder")
     
@@ -74,3 +73,7 @@ def scrapetheweb(
         except requests.RequestException as e:
             logger.error(f"Error searching for '{value}': {str(e)}")
             return None
+
+
+
+            
